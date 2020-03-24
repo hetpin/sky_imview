@@ -55,9 +55,10 @@ def process(paths):
 	process.data = read_fits_image(paths[process.cur_id])
 
 	#Setup plt
+	process.inverse_mode = 1
 	fig, ax = plt.subplots()
 	plt.subplots_adjust(left=0.25, bottom=0.25)
-	plt_im = plt.imshow(boost(process.data), cmap = 'seismic')
+	plt_im = plt.imshow(process.inverse_mode * boost(process.data), cmap = 'seismic')
 	plt.colorbar()
 	ax.margins(x=0)
 
@@ -69,7 +70,7 @@ def process(paths):
 	s_gamma = Slider(ax_gamma, 'Gamma', 0.001, 0.3, valinit=0.05)
 	def update(val):
 		print("Update: saturate=%d percent, gamma=%f"%(s_satur.val, s_gamma.val))
-		boost_data = boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val)
+		boost_data = process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val)
 		plt_im.set_data(boost_data)
 		plt_im.set_clim([boost_data.min(), boost_data.max()])
 		fig.canvas.draw_idle()
@@ -86,12 +87,19 @@ def process(paths):
 
 	saveax = plt.axes([0.65, 0.025, 0.1, 0.04])
 	save_button = Button(saveax, 'Save', color=axcolor, hovercolor='0.975')
-
 	def save(event):
 		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'.png')
 		print('saving ', out_path)
 		plt.savefig(out_path, bbox_inches='tight',transparent=True, pad_inches=0)
 	save_button.on_clicked(save)
+
+	inverseax = plt.axes([0.525, 0.025, 0.1, 0.04])
+	inverse_button = Button(inverseax, 'Inverse', color=axcolor, hovercolor='0.975')
+	def inverse(event):
+		process.inverse_mode = -process.inverse_mode		
+		print('inverse_mode ', process.inverse_mode)
+		update(None)
+	inverse_button.on_clicked(inverse)
 
 	prevax = plt.axes([0.25, 0.025, 0.1, 0.04])
 	prev_button = Button(prevax, 'Prev', color=axcolor, hovercolor='0.975')
@@ -100,10 +108,7 @@ def process(paths):
 		process.cur_id = (process.cur_id - 1) if process.cur_id > 0 else process.cur_id		
 		print('Back to ... %d/%d: %s'%(process.cur_id, len(paths),paths[process.cur_id]))
 		process.data = read_fits_image(paths[process.cur_id])
-		boost_data = boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val)
-		plt_im.set_data(boost_data)
-		plt_im.set_clim([boost_data.min(), boost_data.max()])
-		fig.canvas.draw_idle()
+		update(None)
 	prev_button.on_clicked(prev)
 
 	nextax = plt.axes([0.4, 0.025, 0.1, 0.04])
@@ -111,12 +116,8 @@ def process(paths):
 	def next(event):
 		process.cur_id = (process.cur_id + 1) if (process.cur_id + 1) < len(paths) else process.cur_id
 		print('Next to ... %d/%d: %s'%(process.cur_id, len(paths), paths[process.cur_id]))
-
 		process.data = read_fits_image(paths[process.cur_id])
-		boost_data = boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val)
-		plt_im.set_data(boost_data)
-		plt_im.set_clim([boost_data.min(), boost_data.max()])
-		fig.canvas.draw_idle()
+		update(None)
 	next_button.on_clicked(next)
 
 	rax = plt.axes([0.025, 0.5, 0.15, 0.20], facecolor=axcolor)
