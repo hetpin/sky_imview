@@ -1,5 +1,5 @@
 # sky_imview
-![sky_imview screenshot](/imgs/kids_crop_31_seismic.png)
+![sky_imview screenshot](/imgs/screenshot.png)
 
 ```python
 Usage  : python imview.py <img.fits> OR <imgs_dir>
