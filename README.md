@@ -1,11 +1,12 @@
 # sky_imview
-Visualize astronomical img by tweaking: saturate % brightest pixels + gamma compresion.
+![sky_imview screenshot](/imgs/kids_crop_31_seismic.png)
+
 ```python
 Usage  : python imview.py <img.fits> OR <imgs_dir>
 Example: python imview.py imgs
 ```
 
-- cmap: gray, seismic
-- saturation
-- gamma
+- Cmap: gray, seismic
+- Tweaking saturation (remove %brightest pixels )
+- Tweaking gamma compression
 - Save boosted img
