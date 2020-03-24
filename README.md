@@ -9,4 +9,5 @@ Example: python imview.py imgs
 - Cmap: gray, seismic
 - Tweaking saturation (remove %brightest pixels )
 - Tweaking gamma compression
+- Brightness inversion
 - Save boosted img
