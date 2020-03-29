@@ -88,10 +88,10 @@ def process(paths):
 	saveax = plt.axes([0.65, 0.025, 0.1, 0.04])
 	save_button = Button(saveax, 'Save', color=axcolor, hovercolor='0.975')
 	def save(event):
-		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'_plot.png')
+		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'_plot.jpg')
 		plt.savefig(out_path, bbox_inches='tight',transparent=True, pad_inches=0)
 		print('saved ', out_path)
-		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'.png')
+		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'.jpg')
 		plt.imsave(out_path, process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val), cmap=radio.value_selected)
 	save_button.on_clicked(save)
 
