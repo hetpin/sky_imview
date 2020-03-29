@@ -11,3 +11,17 @@ Example: python imview.py imgs
 - Tweaking gamma compression
 - Brightness inversion
 - Save boosted img
+
+# sky_via
+
+```python
+On browser  : static/via.html
+```
+
+```python
+On localhost  : python flask_via.py 
+```
+
+Customized features:
+- Import/Export COCO-format annotation
+- Quick ellipse editor (drag(Shift + 'arrows'), scale('['/']') and rotate(r/R)).
