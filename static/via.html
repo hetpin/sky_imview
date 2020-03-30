@@ -528,6 +528,11 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
       </div>
 
       <div id="leftsidebar">
+      <div>
+        <h3 align="center"> Welcome <span id="username" style="background-color:lightblue">!</span> <button onclick="_ask_username()">edit</button> </h3>
+        <span> Choose region color </span><input type="color" name="color1" id ="color1" value="#f6b73c" required=""> <span id="res_color1"></span><br><br>
+      </div>
+
         <div class="leftsidebar_accordion_panel show" style="float:right; border:2px solid #f2f2f2;">
           <span class="text_button" onclick="leftsidebar_decrease_width()" title="Reduce width of this toolbar panel">&larr;</span>
           <span class="text_button" onclick="leftsidebar_increase_width()" title="Increase width of this toolbar panel">&rarr;</span>
@@ -1078,6 +1083,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 "use strict";
 
+// new var from hetpin
+var _via_user_name = '';
+var color1= document.getElementById("color1");
+var rescolor1= document.getElementById("res_color1");
+  color1.addEventListener("input", function() {
+    res_color1.innerHTML = color1.value;
+  }, false); 
+
 var VIA_VERSION      = '2.0.9';
 var VIA_NAME         = 'VGG Image Annotator';
 var VIA_SHORT_NAME   = 'VIA';
@@ -1392,6 +1405,23 @@ function _via_init() {
     }, 100);
   }
 
+  if (_via_user_name === '') {
+    _ask_username();
+  }
+
+}
+
+//Prompt for username
+function _ask_username(){
+  var person = prompt("Please enter your name");
+  if (person != null) {
+    var desired = person.replace(/[^\w\s]/gi, '').replace(/ /g,'');
+  _via_user_name = (( desired === '') ? 'unknown': desired);
+  } else{
+    _via_user_name = 'unknown';
+  }
+  show_message(person + ':' + desired +':' + _via_user_name);
+  document.getElementById("username").innerHTML = _via_user_name;
 }
 
 function _via_init_reg_canvas_context() {
