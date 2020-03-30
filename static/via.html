@@ -606,58 +606,69 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
 
         <button class="leftsidebar_accordion">Keyboard Shortcuts</button>
         <div class="leftsidebar_accordion_panel">
-          <div style="display:block; text-align:center; padding:1rem; font-weight: bold;">NEW SHORTCUT FOR ELLIPSE FITTING</div>
+          <div style="display:block; text-align:center; padding:1rem; font-weight: bold;">ESSENTIAL SHORTCUTS</div>
           <table>
             <tr>
-              <td style="width:8em;"><span class="key">&larr;</span>&nbsp;<span class="key">&uarr;</span>&nbsp;<span class="key">&rarr;</span>&nbsp;<span class="key">&darr;</span></td>
-              <td>Move selected region by 1 px (Shift to jump 10px)</td>
+              <td style="width:8em;"><span class="key">w</span>&nbsp;<span class="key">a</span>&nbsp;<span class="key">s</span>&nbsp;<span class="key">d</span>
+                <br><br><span class="key">&larr;</span>&nbsp;<span class="key">&uarr;</span>&nbsp;<span class="key">&rarr;</span>&nbsp;<span class="key">&darr;</span><br>
+              </td>
+              <td>Move selected regions by 1 px (<span class="key">Shift</span> to jump 10px)</td>
+            </tr>
+
+            <tr>
+              <td>( <span class="key">Shift</span> ) <span class="key">r</span></td>
+              <td>Rotate selected ellipses</td>
             </tr>
             <tr>
-              <td style="width:8em;"><span class="key">[</span> <span class="key">]</span></td>
-              <td>Scale up/down selected ellipses by 10% radius</td>
+              <td style="width:8em;">( <span class="key">Shift</span> ) <span class="key">z</span></td>
+              <td>Zoom(scale) (rx,ry) 10%</td>
             </tr>
             <tr>
-              <td><span class="key">r</span> <span class="key">R</span></td>
-              <td>Rotate selected ellipses clock-wise/counterclock-wise</td>
+              <td style="width:8em;">( <span class="key">Shift</span> ) <span class="key">q</span></td>
+              <td>Scale rx by 10%</td>
+            </tr>
+            <tr>
+              <td style="width:8em;">( <span class="key">Shift</span> ) <span class="key">e</span></td>
+              <td>Scale ry by 10%</td>
             </tr>
             <tr>
               <td><span class="key">l</span></td>
-              <td>Show/hide region labels</td>
+              <td>On/off region labels</td>
             </tr>
             <tr>
               <td><span class="key">b</span></td>
-              <td>Show/hide region borders</td>
+              <td>On/off region borders</td>
             </tr>
             <tr>
-              <td><span class="key">Spacebar</span></td>
-              <td>Toggle class editor</td>
-            </tr>
-            <tr>
-              <td><span class="key">Ctrl</span><span class="key">Spacebar</span></td>
-              <td>Enable/Disable on-region class editor</td>
+              <td><span class="key">Ctrl</span> <span class="key">Space</span></td>
+              <td>Enable/disable on-region class editor</td>
             </tr>
           </table>
           <div style="display:block; text-align:center; padding:1rem;">Available only on image focus</div>
           <table>
             <tr>
-              <td><span class="key">a</span></td>
+              <td><span class="key">Spacebar</span></td>
+              <td>Toggle class editor</td>
+            </tr>
+            <tr>
+              <td><span class="key">Ctrl</span> <span class="key">a</span></td>
               <td>Select all regions</td>
             </tr>
 
             <tr>
-              <td><span class="key">c</span></td>
+              <td><span class="key">Ctrl</span> <span class="key">c</span></td>
               <td>Copy selected regions</td>
             </tr>
             <tr>
-              <td><span class="key">v</span></td>
+              <td><span class="key">Ctrl</span> <span class="key">v</span></td>
               <td>Paste selected regions</td>
             </tr>
             <tr>
-              <td><span class="key">d</span></td>
+              <td><span class="key">Ctrl</span> <span class="key">d</span></td>
               <td>Delete selected regions</td>
             </tr>
             <tr>
-              <td><span class="key">Ctrl</span> + Wheel</td>
+              <td><span class="key">Ctrl</span> Wheel</td>
               <td>Zoom in/out (mouse cursor is over image)</td>
             </tr>
             <tr>
@@ -4935,12 +4946,14 @@ function _via_handle_global_keydown_event(e) {
 }
 
 function _via_reg_canvas_keyup_handler(e) {
+  // show_message('keyup: ' + e.ctrlKey + ' ' + e.shiftKey);
   if ( e.ctrlKey ) {
     _via_is_ctrl_pressed = false;
   }
 }
 
 function _via_reg_canvas_keydown_handler(e) {
+  // show_message('keydown: ' + e.ctrlKey + ' ' + e.shiftKey);
   if ( e.ctrlKey ) {
     _via_is_ctrl_pressed = true;
   }
@@ -4959,13 +4972,13 @@ function _via_reg_canvas_keydown_handler(e) {
         }
     }
 
-    if ( e.key === 'a' ) {
+    if ( e.key === 'a' && e.ctrlKey) {
       sel_all_regions();
       e.preventDefault();
       return;
     }
 
-    if ( e.key === 'c' ) {
+    if ( e.key === 'c' && e.ctrlKey) {
       if (_via_is_region_selected ||
           _via_is_all_region_selected) {
         copy_sel_regions();
@@ -4974,7 +4987,7 @@ function _via_reg_canvas_keydown_handler(e) {
       return;
     }
 
-    if ( e.key === 'v' ) {
+    if ( e.key === 'v' && e.ctrlKey ) {
       paste_sel_regions_in_current_image();
       e.preventDefault();
       return;
@@ -4992,7 +5005,7 @@ function _via_reg_canvas_keydown_handler(e) {
       return;
     }
 
-    if ( e.key === 'd' ) {
+    if ( e.key === 'd' && e.ctrlKey ) {
       if ( _via_is_region_selected ||
            _via_is_all_region_selected ) {
         del_sel_regions();
@@ -5002,52 +5015,89 @@ function _via_reg_canvas_keydown_handler(e) {
     }
 
     if ( _via_is_region_selected ) {
-      var scale = 0.1;//Ten % of radius 
+      var scale_x = 0.1;//Ten % of radius 
+      var scale_y = 0.1;//Ten % of radius 
       var rotate = fixfloat(Math.PI/18); //Ten degree
-      if (e.key === '[') {
-        shortcut_selected_regions(scale, 0);
+      if (e.key === 'e') {
+        shortcut_selected_regions(0, scale_y, 0);
         _via_redraw_reg_canvas();
         e.preventDefault();
         return;        
       }
-      if (e.key === ']') {
-        shortcut_selected_regions(-scale, 0);
+      if (e.key === 'E') {
+        shortcut_selected_regions(0, -scale_y, 0);
+        _via_redraw_reg_canvas();
+        e.preventDefault();
+        return;        
+      }
+
+      if (e.key === 'q') {
+        shortcut_selected_regions(scale_x, 0, 0);
+        _via_redraw_reg_canvas();
+        e.preventDefault();
+        return;        
+      }
+      if (e.key === 'Q') {
+        shortcut_selected_regions(-scale_x, -0, 0);
+        _via_redraw_reg_canvas();
+        e.preventDefault();
+        return;        
+      }
+
+      if (e.key === 'z') {
+        shortcut_selected_regions(scale_x, scale_y, 0);
+        _via_redraw_reg_canvas();
+        e.preventDefault();
+        return;        
+      }
+      if (e.key === 'Z') {
+        shortcut_selected_regions(-scale_x, -scale_y, 0);
         _via_redraw_reg_canvas();
         e.preventDefault();
         return;        
       }
       if (e.key === 'r') {
-        shortcut_selected_regions(0, rotate);
+        shortcut_selected_regions(0, 0, rotate);
         _via_redraw_reg_canvas();
         e.preventDefault();
         return;        
       }
       if (e.key === 'R') {
-        shortcut_selected_regions(0, -rotate);
+        shortcut_selected_regions(0, 0, -rotate);
         _via_redraw_reg_canvas();
         e.preventDefault();
         return;        
       }
-      if ( e.key === 'ArrowRight' ||
-           e.key === 'ArrowLeft'  ||
-           e.key === 'ArrowDown'  ||
-           e.key === 'ArrowUp' ) {
+      if ( e.key === 'a' || e.key === 'd' || e.key === 's'  || e.key === 'w'
+        || e.key === 'A' || e.key === 'D' || e.key === 'S'  || e.key === 'W'
+        || e.key === 'ArrowRight' || e.key === 'ArrowLeft' ||e.key === 'ArrowUp'||e.key === 'ArrowDown'
+        ) {
         var del = 1;
-        if ( e.shiftKey ) {
+        if ( e.shiftKey
+          || e.key === 'A' || e.key === 'D' || e.key === 'S'  || e.key === 'W'
+          ) {
           del = 10;
         }
         var move_x = 0;
         var move_y = 0;
         switch( e.key ) {
+        case 'a':
+        case 'A':
         case 'ArrowLeft':
           move_x = -del;
           break;
+        case 'w':
+        case 'W':
         case 'ArrowUp':
           move_y = -del;
           break;
+        case 'd':
+        case 'D':
         case 'ArrowRight':
           move_x =  del;
           break;
+        case 's':
+        case 'S':
         case 'ArrowDown':
           move_y =  del;
           break;
@@ -5143,7 +5193,7 @@ function _via_polyshape_add_new_polyshape(img_id, region_shape, region_id) {
   }
 }
 
-function shortcut_selected_regions(scale = 0.0, rotate=0.0) {
+function shortcut_selected_regions(scale_x = 0.0, scale_y=0.0, rotate=0.0) {
   if ( _via_display_area_content_name === VIA_DISPLAY_AREA_CONTENT_NAME.IMAGE_GRID ) {
     return;
   }
@@ -5174,8 +5224,8 @@ function shortcut_selected_regions(scale = 0.0, rotate=0.0) {
       case VIA_REGION_SHAPE.CIRCLE:
         break;
       case VIA_REGION_SHAPE.ELLIPSE:
-        image_attr['rx'] += fixfloat(scale*image_attr['rx']);
-        image_attr['ry'] += fixfloat(scale*image_attr['ry']);
+        image_attr['rx'] += fixfloat(scale_x *image_attr['rx']);
+        image_attr['ry'] += fixfloat(scale_y*image_attr['ry']);
         image_attr['theta'] += fixfloat(rotate);
 
         canvas_attr['rx'] = Math.round( image_attr['rx'] / _via_canvas_scale);
