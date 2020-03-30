@@ -23,4 +23,4 @@ Run on localhost  : python flask_via.py
 ```
 
 - Import/Export COCO-format annotation
-- Quick ellipse editor (drag(Shift + 'arrows'), scale('['/']') and rotate(r/R)).
+- Quick ellipse editor (drag drop, scale and rotate).
