@@ -530,7 +530,7 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
       <div id="leftsidebar">
       <div>
         <h3 align="center"> Welcome <span id="username" style="background-color:lightblue">!</span> <button onclick="_ask_username()">edit</button> </h3>
-        <span> Choose region color </span><input type="color" name="color1" id ="color1" value="#f6b73c" required=""> <span id="res_color1"></span><br><br>
+        <span> Pick region color </span><input type="color" name="color1" id ="color1" value="#FFFF00" required=""> <span id="res_color1"></span><br><br>
       </div>
 
         <div class="leftsidebar_accordion_panel show" style="float:right; border:2px solid #f2f2f2;">
@@ -1088,7 +1088,11 @@ var _via_user_name = '';
 var color1= document.getElementById("color1");
 var rescolor1= document.getElementById("res_color1");
   color1.addEventListener("input", function() {
-    res_color1.innerHTML = color1.value;
+    VIA_THEME_SEL_REGION_FILL_BOUNDARY_COLOR = color1.value;
+    VIA_THEME_BOUNDARY_FILL_COLOR = color1.value;
+    _via_regions_group_color_init();
+    _via_redraw_reg_canvas();
+    // res_color1.innerHTML = color1.value;
   }, false); 
 
 var VIA_VERSION      = '2.0.9';
@@ -1420,7 +1424,7 @@ function _ask_username(){
   } else{
     _via_user_name = 'unknown';
   }
-  show_message(person + ':' + desired +':' + _via_user_name);
+  // show_message(person + ':' + desired +':' + _via_user_name);
   document.getElementById("username").innerHTML = _via_user_name;
 }
 
@@ -4039,22 +4043,22 @@ function _via_draw_ellipse_region(cx, cy, rx, ry, rr, is_selected) {
     _via_draw_ellipse(cx, cy, rx, ry, rr);
     _via_reg_ctx.stroke();
 
-    if ( rx > VIA_THEME_REGION_BOUNDARY_WIDTH &&
-         ry > VIA_THEME_REGION_BOUNDARY_WIDTH ) {
-      // draw a boundary line on both sides of the fill line
-      _via_reg_ctx.strokeStyle = VIA_THEME_BOUNDARY_LINE_COLOR;
-      _via_reg_ctx.lineWidth   = VIA_THEME_REGION_BOUNDARY_WIDTH/4;
-      _via_draw_ellipse(cx, cy,
-                        rx + VIA_THEME_REGION_BOUNDARY_WIDTH/2,
-                        ry + VIA_THEME_REGION_BOUNDARY_WIDTH/2,
-                        rr);
-      _via_reg_ctx.stroke();
-      _via_draw_ellipse(cx, cy,
-                        rx - VIA_THEME_REGION_BOUNDARY_WIDTH/2,
-                        ry - VIA_THEME_REGION_BOUNDARY_WIDTH/2,
-                        rr);
-      _via_reg_ctx.stroke();
-    }
+    // if ( rx > VIA_THEME_REGION_BOUNDARY_WIDTH &&
+    //      ry > VIA_THEME_REGION_BOUNDARY_WIDTH ) {
+    //   // draw a boundary line on both sides of the fill line
+    //   _via_reg_ctx.strokeStyle = VIA_THEME_BOUNDARY_LINE_COLOR;
+    //   _via_reg_ctx.lineWidth   = VIA_THEME_REGION_BOUNDARY_WIDTH/4;
+    //   _via_draw_ellipse(cx, cy,
+    //                     rx + VIA_THEME_REGION_BOUNDARY_WIDTH/2,
+    //                     ry + VIA_THEME_REGION_BOUNDARY_WIDTH/2,
+    //                     rr);
+    //   _via_reg_ctx.stroke();
+    //   _via_draw_ellipse(cx, cy,
+    //                     rx - VIA_THEME_REGION_BOUNDARY_WIDTH/2,
+    //                     ry - VIA_THEME_REGION_BOUNDARY_WIDTH/2,
+    //                     rr);
+    //   _via_reg_ctx.stroke();
+    // }
   }
 }
 
