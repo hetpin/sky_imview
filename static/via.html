@@ -1590,6 +1590,14 @@ function sel_local_images() {
 // Handlers EDIT img
 //
 function edit_img() {
+  var process = require('child_process');
+  process.exec('ifconfig',function (err,stdout,stderr) {
+      if (err) {
+          console.log("\n"+stderr);
+      } else {
+          console.log(stdout);
+      }
+  });
   // _via_img_metadata[_via_image_id].regions[sorted_sel_reg_id[i]].shape_attributes['rx'] *= 2;
   if (_via_image_id === '') {
     show_message('No img to edit');    
@@ -1895,6 +1903,7 @@ function import_annotations_from_json(data_str) {
       // copy regions
       var regions = d[img_id].regions;
       var key, i;
+
       for ( i in regions ) {
         var region_i = new file_region();
         for ( key in regions[i].shape_attributes ) {
@@ -1907,16 +1916,21 @@ function import_annotations_from_json(data_str) {
 
           region_i.region_attributes[key] = regions[i].region_attributes[key];
 
-          if ( ! _via_attributes['region'].hasOwnProperty(key) ) {
+          if (key === 'by' || key === 'on') {
+            continue;
+          }
+          if ( ! _via_attributes['region'].hasOwnProperty(key)) {
             //No key -> add single key radio + set default
-            console.log(region_i.region_attributes[key]);
             var my_att = { 'type':'radio','options':{}, 'default_options':{} };
             my_att['options'][region_i.region_attributes[key]] = '';
             my_att['default_options'][region_i.region_attributes[key]] = true;            
             _via_attributes['region'][key] = my_att;
           } else{
-            //Key exist -> add option
-            _via_attributes['region'][key]['options'][region_i.region_attributes[key]] = '';
+            //Key exist -> add option to type_option attribute
+            try{
+              _via_attributes['region'][key]['options'][region_i.region_attributes[key]] = '';
+            } catch (error) {
+            }
           }
         }
 
@@ -1927,6 +1941,9 @@ function import_annotations_from_json(data_str) {
           region_import_count += 1;
         }
       }
+      // Add editting history attributes 'by' and 'on'
+      _via_attributes['region']['by'] = { 'type':'text','description':'Author', 'default_value':'Unknown' };
+      _via_attributes['region']['on'] = { 'type':'text','description':'Date edit', 'default_value':'Unknown' };
     }
     show_message('Import Summary : [' + file_added_count + '] new files, ' +
                  '[' + region_import_count + '] regions, ' +
@@ -2037,6 +2054,7 @@ function coco_to_via(coco) {
         }
 
         if (is_ellipse) {
+          //'by':'', 'on':''
           // An ellipse
             // var r = { 'shape_attributes': { 'name':'ellipse', 'cx': [], 'cy': [], 'rx': [], 'ry': [], 'theta':[]},
             var r = { 'shape_attributes': { 'name':'ellipse', 'cx': 0, 'cy': 0, 'rx': 0, 'ry': 0, 'theta':0},
@@ -2052,11 +2070,13 @@ function coco_to_via(coco) {
               var sup_category = coco.categories[category_id]['supercategory'];
               r['region_attributes'][sup_category] = coco.categories[category_id]['name']; 
             }
+            r['region_attributes']['by'] = ((typeof(annotation['by']) !== 'undefined') ? annotation['by'] : 'Unknown') ; 
+            r['region_attributes']['on'] = ((typeof(annotation['on']) !== 'undefined') ? annotation['on'] : 'Unknown') ; 
         } else{
           if ( seg.length === 8 && is_rectangle ) {
             // a rectangle
             var r = { 'shape_attributes': { 'name':'rect', 'x': [], 'y': [], 'width': [], 'height': []},
-                      'region_attributes': {},
+                      'region_attributes': {'by':'', 'on':''},
                     };
             r['shape_attributes']['x'].push( anno_bbox[0] );
             r['shape_attributes']['y'].push( anno_bbox[1] );
@@ -2070,7 +2090,7 @@ function coco_to_via(coco) {
           } else {
             // other shapes
             var r = { 'shape_attributes': { 'name':'polygon', 'all_points_x':[], 'all_points_y':[] },
-              'region_attributes': {},
+              'region_attributes': {'by':'', 'on':''},
             };
             for ( var j = 0; j < seg.length; j = j + 2 ) {
               r['shape_attributes']['all_points_x'].push( seg[j] );
@@ -2382,10 +2402,18 @@ function pack_via_metadata(return_type) {
                  region.shape_attributes['name'] === 'polygon' ||
                  region.shape_attributes['name'] === 'point' ) {
               var annotation = via_region_shape_to_coco_annotation(region.shape_attributes);
+
+              //Adding author and date attributes
+              var by_on = ['by', 'on']
+              for (var key of by_on) {
+                annotation[key] = ((typeof(region.region_attributes[key]) !== 'undefined') ? region.region_attributes[key] : 'Unknown') ; 
+              }
+
               var attr_val;
               for(var k in region.region_attributes) {
                 if ( region.region_attributes[k] !== "undefined" &&
-                     Object.entries(region.region_attributes[k]).length > 0) {
+                     Object.entries(region.region_attributes[k]).length > 0
+                     && !by_on.includes(k)) {
                     attr_val = region.region_attributes[k];
                 }
               }
@@ -2473,6 +2501,8 @@ function via_region_shape_to_coco_annotation(shape_attributes) {
     }
     annotation['bbox'] = polygon_to_bbox(annotation['segmentation']);
     annotation['area'] = annotation['bbox'][2] * annotation['bbox'][3];
+
+    annotation['ellipse'] = [shape_attributes['cx'], shape_attributes['cy'], a, b, rotation];
     break;
 
   case 'polygon':
@@ -2722,6 +2752,28 @@ function jump_to_image(image_index) {
   }
 }
 
+function get_selected_region_id(){
+  var arr = [];
+  var i, n;
+  n = _via_region_selected_flag.length;
+  for ( i = 0; i < n; ++i ) {
+    if ( _via_region_selected_flag[i] ) {
+      arr.push(i);
+    }
+  }
+  return arr;
+}
+
+function update_region_edit_history(){
+  var arr = get_selected_region_id();
+  for(var region_id of arr){
+    _via_img_metadata[_via_image_id].regions[region_id].region_attributes['by'] = _via_user_name;
+    _via_img_metadata[_via_image_id].regions[region_id].region_attributes['on'] = new Date().toLocaleString();
+  }
+  annotation_editor_update_content();
+}
+
+
 function count_missing_region_attr(img_id) {
   var miss_region_attr_count = 0;
   var attr_count = Object.keys(_via_region_attributes).length;
@@ -2842,6 +2894,7 @@ function _via_reg_canvas_mousedown_handler(e) {
 //  - new region drawing (including polygon)
 //  - moving/resizing/select/unselect existing region
 function _via_reg_canvas_mouseup_handler(e) {
+  console.log('_via_reg_canvas_mouseup_handler ' + e);
   e.stopPropagation();
   _via_click_x1 = e.offsetX; _via_click_y1 = e.offsetY;
 
@@ -2917,7 +2970,7 @@ function _via_reg_canvas_mouseup_handler(e) {
           canvas_point_region.shape_attributes['cy'] = Math.round(_via_click_y0);
           _via_canvas_regions.push(canvas_point_region);
           break;
-        }
+        }        
         annotation_editor_update_content();
       }
     }
@@ -3798,6 +3851,8 @@ function _via_move_region(region_id, move_x, move_y) {
     }
     break;
   }
+  
+  update_region_edit_history();
 }
 
 function _via_polygon_del_vertex(region_id, vertex_id) {
