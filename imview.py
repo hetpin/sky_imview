@@ -66,8 +66,8 @@ def process(paths):
 	axcolor = 'lightgoldenrodyellow'
 	ax_satur = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
 	ax_gamma = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
-	s_satur = Slider(ax_satur, 'Saturate %', 0, 10, valinit=1, valstep=1)
-	s_gamma = Slider(ax_gamma, 'Gamma', 0.001, 0.3, valinit=0.05)
+	s_satur = Slider(ax_satur, 'Saturate %', 0, 10, valinit=0, valstep=1)
+	s_gamma = Slider(ax_gamma, 'Gamma', 0.001, 0.3, valinit=0.14)
 	def update(val):
 		print("Update: saturate=%d percent, gamma=%f"%(s_satur.val, s_gamma.val))
 		boost_data = process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val)
@@ -76,6 +76,7 @@ def process(paths):
 		fig.canvas.draw_idle()
 	s_satur.on_changed(update)
 	s_gamma.on_changed(update)
+	update(0)
 
 	#Buttons: reset, save, cmap
 	resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
