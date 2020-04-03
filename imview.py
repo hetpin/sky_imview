@@ -92,8 +92,15 @@ def process(paths):
 		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'_plot.jpg')
 		plt.savefig(out_path, bbox_inches='tight',transparent=True, pad_inches=0)
 		print('saved ', out_path)
+
 		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'.jpg')
 		plt.imsave(out_path, process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val), cmap=radio.value_selected)
+		print('saved ', out_path)
+
+		#Save directly to 'imgs_VIA' dir
+		out_path = 'imgs_VIA/' + paths[process.cur_id].split('/')[-1].replace('.fits', '.jpg')
+		plt.imsave(out_path, process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val), cmap=radio.value_selected)
+		print('saved ', out_path)
 	save_button.on_clicked(save)
 
 	inverseax = plt.axes([0.525, 0.025, 0.1, 0.04])
