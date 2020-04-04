@@ -5049,13 +5049,13 @@ function _via_handle_global_keydown_event(e) {
   }
   if ( e.key === 'PageUp') {
     jump_to_prev_image_block();
-    e.preventDefault();
+    e.preventDefault(); 
     return;
   }
 
   if ( e.key === '1' && e.ctrlKey) {
     select_region_shape('select');
-    // show_message('Single click and drag mouse to select multiple regions.')
+    // show_message('Single click and drag mouse to select multiple regions')
     e.preventDefault();
     return;
   }
