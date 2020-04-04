@@ -9,6 +9,7 @@
 - `b`: show/hide boundary.
 - `Ctrl Spcace`: Show/hide on-image annotation editor.
 - For selected ellipse: `wasd` (move); `q`/`e` (scale horizonal/vertical axis); `z` (zoom); `Ctrl a` (all); `Ctrl d` (delete).
+- `Ctrl 1`: Switch to box selection mode (`Ctrl`+`number` to switch to another mode).
 - `Space`: Show/hide all annotations.
 
 #### Visualise annotation difference
