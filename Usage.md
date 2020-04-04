@@ -1,7 +1,7 @@
 # Pipeline:
 1. Open static/via.html in Browser and enter your name for logging.
 2. Import: `Annotation`->`Import Annotation COCO format`: select `annos/coco_data_ellipse.json`
-3. Edit: add/delele/move/scale/rotate region by mouse or shortcuts (bottom left for details).
+3. Edit: add/delele/move/scale/rotate region by mouse or [shortcuts](#Some-handly-shortcuts).
 4. Export: `Annotation`->`Export Annotaion COCO format` to save annotation as file. Done.
 
 #### Some handly shortcuts

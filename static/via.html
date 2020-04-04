@@ -301,6 +301,10 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
           <rect width="80" height="100" x="265" y="40" stroke="yellow" fill="none" stroke-width="2"></rect>
           <text x="265" y="30" font-family="'Comic Sans MS', cursive, sans-serif" font-size="18" fill="yellow">Annotator</text>
         </symbol>
+        <symbol id="shape_select">
+          <title>Rectangular region shape</title>
+          <rect width="10" height="8" x="6" y="10" stroke-width="2"></rect>
+        </symbol>
         <symbol id="shape_rectangle">
           <title>Rectangular region shape</title>
           <rect width="20" height="12" x="6" y="10" stroke-width="2"></rect>
@@ -542,7 +546,8 @@ ul.region_shape .selected { fill:#ffffff; stroke:#ff0000; }
         <button class="leftsidebar_accordion active">Region Shape</button>
         <div class="leftsidebar_accordion_panel show">
           <ul class="region_shape">
-            <li id="region_shape_rect" class="selected" onclick="select_region_shape('rect')" title="Rectangle (Shortcut key 1)"><svg height="32" viewbox="0 0 32 32"><use xlink:href="#shape_rectangle"></use></svg></li>
+            <li id="region_shape_select" class="selected" onclick="select_region_shape('select')" title="Select regions"><svg height="32" viewbox="0 0 32 32"><use xlink:href="#shape_select"></use></svg></li>
+            <li id="region_shape_rect" onclick="select_region_shape('rect')" title="Rectangle (Shortcut key 1)"><svg height="32" viewbox="0 0 32 32"><use xlink:href="#shape_rectangle"></use></svg></li>
             <li id="region_shape_circle" onclick="select_region_shape('circle')" title="Circle (Shortcut key 2)"><svg height="32" viewbox="0 0 32 32"><use xlink:href="#shape_circle"></use></svg></li>
             <li id="region_shape_ellipse" onclick="select_region_shape('ellipse')" title="Ellipse (Shortcut key 3)"><svg height="32" viewbox="0 0 32 32"><use xlink:href="#shape_ellipse"></use></svg></li>
             <li id="region_shape_polygon" onclick="select_region_shape('polygon')" title="Polygon (Shortcut key 4)"><svg height="32" viewbox="0 0 32 32"><use xlink:href="#shape_polygon"></use></svg></li>
@@ -1209,7 +1214,7 @@ var _via_is_ctrl_pressed             = false;
 var _via_is_debug_mode               = false;
 
 // region
-var _via_current_shape             = VIA_REGION_SHAPE.RECT;
+var _via_current_shape             = 'select' //VIA_REGION_SHAPE.RECT;
 var _via_current_polygon_region_id = -1;
 var _via_user_sel_region_id        = -1;
 var _via_click_x0 = 0; var _via_click_y0 = 0;
@@ -2035,10 +2040,10 @@ function coco_to_via(coco) {
         var key_ellipse = 'ellipse';
         var is_ellipse = false;
         if (key_ellipse in annotation) {
-          console.log('key exist');
+          // console.log('key exist');
           var elip = annotation['ellipse'];
           is_ellipse = true;
-          console.log(elip);
+          // console.log(elip);
         }
  
         // check if imported region is polygon or rectangle
@@ -2679,12 +2684,17 @@ function select_region_shape(sel_shape_name) {
     var ui_element = document.getElementById('region_shape_' + VIA_REGION_SHAPE[shape_name]);
     ui_element.classList.remove('selected');
   }
+  var ui_element = document.getElementById('region_shape_select');
+  ui_element.classList.remove('selected');
 
   _via_current_shape = sel_shape_name;
   var ui_element = document.getElementById('region_shape_' + _via_current_shape);
   ui_element.classList.add('selected');
 
   switch(_via_current_shape) {
+  case 'select':
+    show_message('Press single click and drag mouse to select multiple regions');
+    break;    
   case VIA_REGION_SHAPE.RECT: // Fall-through
   case VIA_REGION_SHAPE.CIRCLE: // Fall-through
   case VIA_REGION_SHAPE.ELLIPSE:
@@ -2888,6 +2898,50 @@ function _via_reg_canvas_mousedown_handler(e) {
       _via_is_user_drawing_region = true;
     }
   }
+}
+
+//Query all regions having center inside a RECT
+function get_regions_inside_a_rect(region_x0, region_y0, region_dx, region_dy, descending_order = true){
+  var arr = [];
+  var N = _via_canvas_regions.length;
+  if ( N === 0 ) {
+    return arr;
+  }
+  var start, end, del;
+  // traverse the canvas regions in alternating ascending
+  // and descending order to solve the issue of nested regions
+  if ( descending_order ) {
+    start = N - 1;
+    end   = -1;
+    del   = -1;
+  } else {
+    start = 0;
+    end   = N;
+    del   = 1;
+  }
+
+  var i = start;
+  while ( i !== end ) {
+    var attr   = _via_canvas_regions[i].shape_attributes;
+    if (attr['name'] === VIA_REGION_SHAPE.ELLIPSE || attr['name'] === VIA_REGION_SHAPE.CIRCLE || attr['name'] === VIA_REGION_SHAPE.RECT) {
+      var px = attr['cx'];
+      var py = attr['cy'];
+      if (attr['name'] === VIA_REGION_SHAPE.RECT) {
+        px = attr['x'] + attr['width']/2;
+        py = attr['y'] + attr['height']/2;
+      }
+      //Condition 1: Center of region_i inside the RECT
+      if (is_inside_rect(region_x0, region_y0, region_dx, region_dy, px, py)) {
+        arr.push(i);//Push to end of arr
+      }
+      //Condition 2: The RECT is not inside the region_i (To select little regions nested on a huge region)
+      if (is_inside_this_region(region_x0, region_y0, i) && is_inside_this_region(region_x0 + region_dx, region_y0 + region_dy, i)) {
+        arr.pop();//Remove last element
+      }
+    }
+    i = i + del;
+  }
+  return arr;
 }
 
 // implements the following functionalities:
@@ -3248,6 +3302,35 @@ function _via_reg_canvas_mouseup_handler(e) {
 
     if ( region_dx > VIA_REGION_MIN_DIM && region_dy > VIA_REGION_MIN_DIM ) { // avoid regions with 0 dim
       switch(_via_current_shape) {
+      case 'select':
+        if ( _via_click_x0 < _via_click_x1 ) {
+          region_x0 = _via_click_x0;
+          region_x1 = _via_click_x1;
+        } else {
+          region_x0 = _via_click_x1;
+          region_x1 = _via_click_x0;
+        }
+
+        if ( _via_click_y0 < _via_click_y1 ) {
+          region_y0 = _via_click_y0;
+          region_y1 = _via_click_y1;
+        } else {
+          region_y0 = _via_click_y1;
+          region_y1 = _via_click_y0;
+        }
+
+        var x = Math.round(region_x0 * _via_canvas_scale);
+        var y = Math.round(region_y0 * _via_canvas_scale);
+        var width  = Math.round(region_dx * _via_canvas_scale);
+        var height = Math.round(region_dy * _via_canvas_scale);
+        var sel_region_ids = get_regions_inside_a_rect(region_x0, region_y0, region_dx, region_dy);
+        show_message('Selected region: ' + sel_region_ids);
+        for(var r_id of sel_region_ids){
+          set_region_select_state(r_id, true);
+          _via_is_region_selected = true;
+        }
+        break;
+
       case VIA_REGION_SHAPE.RECT:
         // ensure that (x0,y0) is top-left and (x1,y1) is bottom-right
         if ( _via_click_x0 < _via_click_x1 ) {
@@ -3487,6 +3570,7 @@ function _via_reg_canvas_mousemove_handler(e) {
     _via_reg_ctx.strokeStyle = VIA_THEME_BOUNDARY_FILL_COLOR;
 
     switch (_via_current_shape ) {
+    case 'select':
     case VIA_REGION_SHAPE.RECT:
       if ( _via_click_x0 < _via_current_x ) {
         if ( _via_click_y0 < _via_current_y ) {
@@ -4395,6 +4479,9 @@ function is_inside_region(px, py, descending_order) {
 }
 
 function is_inside_this_region(px, py, region_id) {
+  if (region_id < 0) {
+    return false;
+  }
   var attr   = _via_canvas_regions[region_id].shape_attributes;
   var result = false;
   switch ( attr['name'] ) {
@@ -4966,11 +5053,36 @@ function _via_handle_global_keydown_event(e) {
     return;
   }
 
-  if ( e.key === 'a' ) {
-    if ( _via_display_area_content_name === VIA_DISPLAY_AREA_CONTENT_NAME.IMAGE_GRID ) {
-      // select all in image grid
-      image_grid_group_toggle_select_all();
-    }
+  if ( e.key === '1' && e.ctrlKey) {
+    select_region_shape('select');
+    // show_message('Single click and drag mouse to select multiple regions.')
+    e.preventDefault();
+    return;
+  }
+  if ( e.key === '2' && e.ctrlKey) {
+    select_region_shape(VIA_REGION_SHAPE.RECT);
+    e.preventDefault();
+    return;
+  }
+  if ( e.key === '3' && e.ctrlKey) {
+    select_region_shape(VIA_REGION_SHAPE.CIRCLE);
+    e.preventDefault();
+    return;
+  }
+  if ( e.key === '4' && e.ctrlKey) {
+    select_region_shape(VIA_REGION_SHAPE.ELLIPSE);
+    e.preventDefault();
+    return;
+  }
+
+  if ( e.key === 'a' && e.ctrlKey) {
+    sel_all_regions();
+    e.preventDefault();
+    return;
+    // if ( _via_display_area_content_name === VIA_DISPLAY_AREA_CONTENT_NAME.IMAGE_GRID ) {
+    //   // select all in image grid
+    //   image_grid_group_toggle_select_all();
+    // }
   }
 
   if ( e.key === 'Escape' ) {
