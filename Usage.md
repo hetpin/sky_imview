@@ -4,12 +4,12 @@
 3. Edit: add/delele/move/scale/rotate region by mouse or [shortcuts](#Some-handly-shortcuts).
 4. Export: `Annotation`->`Export Annotaion COCO format` to save annotation as file. Done.
 
-#### Some handly shortcuts
+#### Some handly shortcuts, details in 'bottom left screen'
 - `l`: show/hide label.
 - `b`: show/hide boundary.
 - `Ctrl Spcace`: Show/hide on-image annotation editor.
 - For selected ellipse: `wasd` (move); `q`/`e` (scale horizonal/vertical axis); `z` (zoom); `Ctrl a` (all); `Ctrl d` (delete).
-- `Ctrl 1`: Switch to box selection mode (`Ctrl`+`number` to switch to another mode).
+- `Ctrl 1`: Switch to multiple regions selection mode (`Ctrl`+`number` to switch to another mode).
 - `Space`: Show/hide all annotations.
 
 #### Visualise annotation difference
@@ -23,3 +23,9 @@ Given two annotation versions saved as FILE_1 vs. FILE_2
 - OR: Run imview module `python imview.py imgs` to edit images interactively, then click `Save`.
 
 Then using annotator import as usual with new images in `imgs_VIA/`.
+
+### Define a new class (Star, Galaxy, etc)
+- Select `Attributes` (bottom left screen).
+- Select Region Attribute `Object`.
+- Add a new class as an `Id` of 'Object'.
+- Click to region, annotate as usual with the new class option.

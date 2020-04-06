@@ -3871,6 +3871,9 @@ function _via_validate_move_region(x, y, canvas_attr) {
 function _via_move_region(region_id, move_x, move_y) {
   var image_attr = _via_img_metadata[_via_image_id].regions[region_id].shape_attributes;
   var canvas_attr = _via_canvas_regions[region_id].shape_attributes;
+  move_x /= _via_canvas_scale;
+  move_y /= _via_canvas_scale;
+  show_message(_via_canvas_scale +' ' + move_x + ' ' + move_y);
 
   switch( canvas_attr['name'] ) {
   case VIA_REGION_SHAPE.RECT:
@@ -5402,10 +5405,10 @@ function shortcut_selected_regions(scale_x = 0.0, scale_y=0.0, rotate=0.0) {
     show_message('First load some images!');
     return;
   }
-  if ( _via_is_all_region_selected ) {
-    show_message('Do not scale all regions!');
-    return;
-  }
+  // if ( _via_is_all_region_selected ) {
+  //   show_message('Do not scale all regions!');
+  //   return;
+  // }
   var sorted_sel_reg_id = [];
   for ( var i = 0; i < _via_canvas_regions.length; ++i ) {
     if ( _via_region_selected_flag[i] ) {
