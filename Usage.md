@@ -8,6 +8,7 @@
 - `l`: show/hide label.
 - `b`: show/hide boundary.
 - `Ctrl Spcace`: Show/hide on-image annotation editor.
+- `ArrowLeft`/`ArrowRight`: Next/previous image (On image focus).
 - For selected ellipse: `wasd` (move); `q`/`e` (scale horizonal/vertical axis); `z` (zoom); `Ctrl a` (all); `Ctrl d` (delete).
 - `Ctrl 1`: Switch to multiple regions selection mode (`Ctrl`+`number` to switch to another mode).
 - `Space`: Show/hide all annotations.
