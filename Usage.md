@@ -24,7 +24,7 @@ Given two annotation versions saved as FILE_1 vs. FILE_2
 
 Then using annotator import as usual with new images in `imgs_VIA/`.
 
-### Define a new class (Star, Galaxy, etc)
+#### Define a new class (Star, Galaxy, etc)
 - Select `Attributes` (bottom left screen).
 - Select Region Attribute `Object`.
 - Add a new class as an `Id` of 'Object'.

@@ -1207,7 +1207,7 @@ var _via_is_reg_attr_panel_visible   = false;
 var _via_is_file_attr_panel_visible  = false;
 var _via_is_canvas_zoomed            = false;
 var _via_is_loading_current_image    = false;
-var _via_is_region_id_visible        = true;
+var _via_is_region_id_visible        = false;
 var _via_is_region_boundary_visible  = true;
 var _via_is_region_info_visible      = false;
 var _via_is_ctrl_pressed             = false;
@@ -3873,7 +3873,6 @@ function _via_move_region(region_id, move_x, move_y) {
   var canvas_attr = _via_canvas_regions[region_id].shape_attributes;
   move_x /= _via_canvas_scale;
   move_y /= _via_canvas_scale;
-  show_message(_via_canvas_scale +' ' + move_x + ' ' + move_y);
 
   switch( canvas_attr['name'] ) {
   case VIA_REGION_SHAPE.RECT:
