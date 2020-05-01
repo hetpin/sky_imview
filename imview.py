@@ -31,7 +31,7 @@ def boost(img, saturate = 0.01, gamma = 0.05):
 	# return np.log(img)
 	return func_gamma(img, gamma=gamma)
 
-def read_fits_image(filename, hdu_index=0):
+def read_fits_image(filename, hdu_index=0, is_scale = False, scale = 2000):
     try:
         hdulist = fits.open(filename)
         img_data = None
@@ -44,15 +44,20 @@ def read_fits_image(filename, hdu_index=0):
                 hdulist.close()
                 sys.exit(1)
         hdulist.close()
-        return img_data.astype(np.float64)
+        img_data = img_data.astype(np.float64)
+        if is_scale:
+        	sample_rate = int(np.ceil(np.max(img_data.shape)/scale))
+        	img_data = img_data[::sample_rate, ::sample_rate]
+        	print("scaled by ", sample_rate)
+        return img_data
     except IOError:
         print("Could not read file:", filename)
         sys.exit(1)
 
-def process(paths):
+def process(paths, is_limit_resource = False, max_dim = 2000):
 	#Get data
 	process.cur_id = 0
-	process.data = read_fits_image(paths[process.cur_id])
+	process.data = read_fits_image(paths[process.cur_id], is_scale = is_limit_resource, scale = max_dim)
 
 	#Setup plt
 	process.inverse_mode = 1
@@ -117,7 +122,7 @@ def process(paths):
 	def prev(event):
 		process.cur_id = (process.cur_id - 1) if process.cur_id > 0 else process.cur_id		
 		print('Back to ... %d/%d: %s'%(process.cur_id, len(paths),paths[process.cur_id]))
-		process.data = read_fits_image(paths[process.cur_id])
+		process.data = read_fits_image(paths[process.cur_id], is_scale = is_limit_resource, scale = max_dim)
 		update(None)
 	prev_button.on_clicked(prev)
 
@@ -126,7 +131,7 @@ def process(paths):
 	def next(event):
 		process.cur_id = (process.cur_id + 1) if (process.cur_id + 1) < len(paths) else process.cur_id
 		print('Next to ... %d/%d: %s'%(process.cur_id, len(paths), paths[process.cur_id]))
-		process.data = read_fits_image(paths[process.cur_id])
+		process.data = read_fits_image(paths[process.cur_id], is_scale = is_limit_resource, scale = max_dim)
 		update(None)
 	next_button.on_clicked(next)
 
@@ -150,4 +155,4 @@ if __name__ == '__main__':
 		else:
 			paths = [path]
 		print(paths)
-		process(paths)
+		process(paths, True, max_dim = 500)
