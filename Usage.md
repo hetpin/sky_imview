@@ -7,6 +7,7 @@
 #### Some handly shortcuts, details in 'bottom left screen'
 - `l`: show/hide label.
 - `b`: show/hide boundary.
+- `h` / `k`: Switch between HST/KIDS backgrounds.
 - `Ctrl Spcace`: Show/hide on-image annotation editor.
 - `ArrowLeft`/`ArrowRight`: Next/previous image (On image focus).
 - For selected ellipse: `wasd` (move); `q`/`e` (scale horizonal/vertical axis); `z` (zoom); `Ctrl a` (all); `Ctrl d` (delete).
