@@ -61,7 +61,9 @@ def process(paths, is_limit_resource = False, max_dim = 2000):
 
 	#Setup plt
 	process.inverse_mode = 1
-	fig, ax = plt.subplots()
+	# fig, ax = plt.subplots()
+	fig, (ax_hist, ax) = plt.subplots(1, 2)
+
 	plt.subplots_adjust(left=0.25, bottom=0.25)
 	plt_im = plt.imshow(process.inverse_mode * boost(process.data), cmap = 'seismic')
 	plt.colorbar()
@@ -71,14 +73,17 @@ def process(paths, is_limit_resource = False, max_dim = 2000):
 	axcolor = 'lightgoldenrodyellow'
 	ax_satur = plt.axes([0.25, 0.15, 0.65, 0.03], facecolor=axcolor)
 	ax_gamma = plt.axes([0.25, 0.1, 0.65, 0.03], facecolor=axcolor)
-	s_satur = Slider(ax_satur, 'Saturate %', 0, 10, valinit=0, valstep=1)
-	s_gamma = Slider(ax_gamma, 'Gamma', 0.001, 0.3, valinit=0.14)
+	s_satur = Slider(ax_satur, 'Saturate %', 0, 10, valinit=0, valstep=0.25)
+	s_gamma = Slider(ax_gamma, 'Gamma', 0.001, 1.0, valinit=0.14)
 	def update(val):
 		print("Update: saturate=%d percent, gamma=%f"%(s_satur.val, s_gamma.val))
 		boost_data = process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val)
 		plt_im.set_data(boost_data)
 		plt_im.set_clim([boost_data.min(), boost_data.max()])
 		fig.canvas.draw_idle()
+		ax_hist.clear()
+		ax_hist.hist(boost_data.flatten(),bins=100, log = True, color = 'b')
+
 	s_satur.on_changed(update)
 	s_gamma.on_changed(update)
 	update(0)
@@ -98,14 +103,15 @@ def process(paths, is_limit_resource = False, max_dim = 2000):
 		# plt.savefig(out_path, bbox_inches='tight',transparent=True, pad_inches=0)
 		# print('saved ', out_path)
 
-		out_path = paths[process.cur_id].replace('.fits','_'+ radio.value_selected+'.jpg')
+		# save to the same dir as source img
+		out_path = paths[process.cur_id].replace('.fits','.jpg')
 		plt.imsave(out_path, process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val), cmap=radio.value_selected)
 		print('saved ', out_path)
 
-		#Save directly to 'imgs_VIA' dir
-		out_path = 'imgs_VIA/' + paths[process.cur_id].split('/')[-1].replace('.fits', '.jpg')
-		plt.imsave(out_path, process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val), cmap=radio.value_selected)
-		print('saved ', out_path)
+		# #Save directly to 'imgs_VIA' dir
+		# out_path = 'imgs_VIA/' + paths[process.cur_id].split('/')[-1].replace('.fits', '.jpg')
+		# plt.imsave(out_path, process.inverse_mode * boost(process.data, saturate=s_satur.val/100.0, gamma=s_gamma.val), cmap=radio.value_selected)
+		# print('saved ', out_path)
 	save_button.on_clicked(save)
 
 	inverseax = plt.axes([0.525, 0.025, 0.1, 0.04])
@@ -155,4 +161,4 @@ if __name__ == '__main__':
 		else:
 			paths = [path]
 		print(paths)
-		process(paths, True, max_dim = 500)
+		process(paths, False, max_dim = 500)
