@@ -4901,8 +4901,7 @@ POSSIBILITY OF SUCH DAMAGE.
     function _via_move_region(region_id, move_x, move_y) {
       var image_attr = _via_img_metadata[_via_image_id].regions[region_id].shape_attributes;
       var canvas_attr = _via_canvas_regions[region_id].shape_attributes;
-      move_x /= _via_canvas_scale;
-      move_y /= _via_canvas_scale;
+      console.log(move_x, move_y, _via_canvas_scale);
 
       switch (canvas_attr['name']) {
         case VIA_REGION_SHAPE.RECT:
@@ -6355,6 +6354,10 @@ POSSIBILITY OF SUCH DAMAGE.
                 move_y = del;
                 break;
             }
+            
+            //Move xx actual pixels, then xx pixels need to be scaled accordingly to current canvas scale
+            move_x /= _via_canvas_scale;
+            move_y /= _via_canvas_scale;
             _via_move_selected_regions(move_x, move_y);
             _via_redraw_reg_canvas();
             e.preventDefault();
