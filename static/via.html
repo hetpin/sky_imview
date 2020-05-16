@@ -11603,7 +11603,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
         // update img_fn_list
         img_fn_list_ith_entry_selected(_via_image_index, true);
-        img_fn_list_scroll_to_current_file();
+        
+        //Uncomment this func to disable scroll state update.
+        // img_fn_list_scroll_to_current_file();
 
         // refresh the annotations panel
         annotation_editor_update_content();
@@ -11611,7 +11613,7 @@ POSSIBILITY OF SUCH DAMAGE.
         _via_load_canvas_regions(); // image to canvas space transform
         _via_redraw_reg_canvas();
         _via_reg_canvas.focus();
-
+        
         // Preserve zoom level
         if (_via_is_canvas_zoomed) {
           set_zoom(_via_canvas_zoom_level_index);
