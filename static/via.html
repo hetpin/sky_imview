@@ -1240,10 +1240,10 @@
         <li onclick="show_home_panel()" style="cursor:pointer;">Home</li>
         <li>Project
           <ul>
-            <li onclick="project_open_select_project_file()" title="Load a VIA project (from a JSON file)">Load</li>
-            <li onclick="project_save_with_confirm()" title="Save this VIA project (as a JSON file)">Save</li>
-            <li onclick="settings_panel_toggle()" title="Show/edit project settings">Settings</li>
+            <li onclick="project_open_select_project_file()" title="Load a VIA project (from a JSON file)">Load the whole project</li>
+            <li onclick="project_save_with_confirm()" title="Save this VIA project (as a JSON file)">Save the whole project</li>
             <li class="submenu_divider"></li>
+            <li onclick="settings_panel_toggle()" title="Show/edit project settings">Settings</li>
             <li onclick="sel_local_images()" title="Add images locally stored in this computer">Add local files</li>
             <li onclick="project_file_add_url_with_input()"
               title="Add images from a web URL (e.g. http://www.robots.ox.ac.uk/~vgg/software/via/images/swan.jpg)">Add
@@ -1266,26 +1266,26 @@
 
         <li>Annotation
           <ul>
-            <li onclick="download_all_region_data('csv')" title="Export annotations to a CSV file">Export Annotations
+            <!-- <li onclick="download_all_region_data('csv')" title="Export annotations to a CSV file">Export Annotations
               (as csv)</li>
             <li onclick="download_all_region_data('json')" title="Export annotaitons to a JSON file">Export Annotations
-              (as json)</li>
+              (as json)</li> -->
             <li onclick="download_all_region_data('coco', 'json')"
               title="Export annotaitons to COCO (http://cocodataset.org) format">Export Annotations (COCO format)</li>
             <li onclick="" class="submenu_divider"></li>
-            <li onclick="sel_local_data_file('annotations')" title="Import annotations from a CSV file">Import
+            <!-- <li onclick="sel_local_data_file('annotations')" title="Import annotations from a CSV file">Import
               Annotations (from csv)</li>
             <li onclick="sel_local_data_file('annotations')" title="Import annotations from a JSON file">Import
-              Annotations (from json)</li>
+              Annotations (from json)</li> -->
             <li onclick="sel_local_data_file('annotations_coco')"
               title="Import annotations from a COCO (http://cocodataset.org) formatted JSON file">Import Annotations
               (COCO format)</li>
 
-            <li class="submenu_divider"></li>
+            <!-- <li class="submenu_divider"></li>
             <li onclick="show_annotation_data()" title="Show a preview of annotations (opens in a new browser windows)">
               Preview Annotations</li>
             <li onclick="download_as_image()" title="Download an image containing the annotations">Download as Image
-            </li>
+            </li> -->
           </ul>
         </li>
 
