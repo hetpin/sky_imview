@@ -19,7 +19,7 @@ Open on browser  : static/via.html
 ```
 
 ```python
-Run on localhost  : python flask_via.py 
+[Later] Run on localhost  : python flask_via.py 
 ```
 
 - Import/Export COCO-format annotation

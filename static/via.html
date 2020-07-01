@@ -3457,7 +3457,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
                   d.annotations.push(Object.assign({
                     'id': annotation_id,
-                    'image_id': img_index,
+                    'image_id': parseInt(img_index),
                     'category_id': cat_id,
                   }, annotation));
                   annotation_id = annotation_id + 1;
@@ -3518,6 +3518,7 @@ POSSIBILITY OF SUCH DAMAGE.
           break;
 
         case 'ellipse':
+          // This ellipse attribute output both ellipse paramenter and an approximated polygon.
           var a, b;
           a = shape_attributes['rx'];
           b = shape_attributes['ry'];
@@ -3562,6 +3563,8 @@ POSSIBILITY OF SUCH DAMAGE.
               y1 = shape_attributes['all_points_y'][i];
             }
           }
+          // list to [list]
+          annotation['segmentation'] = [annotation['segmentation']];
           var w = x1 - x0;
           var h = y1 - y0;
           annotation['bbox'] = [x0, y0, w, h];
