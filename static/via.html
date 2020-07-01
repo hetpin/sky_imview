@@ -3519,12 +3519,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
         case 'ellipse':
           // This ellipse attribute output both ellipse paramenter and an approximated polygon.
-          var a, b;
-          a = shape_attributes['rx'];
-          b = shape_attributes['ry'];
+          var a = shape_attributes['rx'];
+          var b = shape_attributes['ry'];
           var rotation = shape_attributes['theta'];
           var theta_to_radian = Math.PI / 180;
+          annotation['segmentation'] = [];
 
+          //ouput approzimated polygon
           for (var theta = 0; theta < 360; theta = theta + VIA_POLYGON_SEGMENT_SUBTENDED_ANGLE) {
             var theta_radian = theta * theta_to_radian;
             var x = shape_attributes['cx'] +
@@ -3536,8 +3537,11 @@ POSSIBILITY OF SUCH DAMAGE.
             annotation['segmentation'].push(fixfloat(x), fixfloat(y));
           }
           annotation['bbox'] = polygon_to_bbox(annotation['segmentation']);
+          // list to [list]
+          annotation['segmentation'] = [annotation['segmentation']];
           annotation['area'] = annotation['bbox'][2] * annotation['bbox'][3];
 
+          //ouput ellipse parameter
           annotation['ellipse'] = [shape_attributes['cx'], shape_attributes['cy'], a, b, rotation];
           break;
 
