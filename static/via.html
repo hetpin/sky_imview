@@ -3435,6 +3435,7 @@ POSSIBILITY OF SUCH DAMAGE.
                   region.shape_attributes['name'] === 'circle' ||
                   region.shape_attributes['name'] === 'ellipse' ||
                   region.shape_attributes['name'] === 'polygon' ||
+                  region.shape_attributes['name'] === 'polyline' ||
                   region.shape_attributes['name'] === 'point') {
                   var annotation = via_region_shape_to_coco_annotation(region.shape_attributes);
 
@@ -3523,7 +3524,6 @@ POSSIBILITY OF SUCH DAMAGE.
           var b = shape_attributes['ry'];
           var rotation = shape_attributes['theta'];
           var theta_to_radian = Math.PI / 180;
-          annotation['segmentation'] = [];
 
           //ouput approzimated polygon
           for (var theta = 0; theta < 360; theta = theta + VIA_POLYGON_SEGMENT_SUBTENDED_ANGLE) {
@@ -3537,8 +3537,6 @@ POSSIBILITY OF SUCH DAMAGE.
             annotation['segmentation'].push(fixfloat(x), fixfloat(y));
           }
           annotation['bbox'] = polygon_to_bbox(annotation['segmentation']);
-          // list to [list]
-          annotation['segmentation'] = [annotation['segmentation']];
           annotation['area'] = annotation['bbox'][2] * annotation['bbox'][3];
 
           //ouput ellipse parameter
@@ -3546,7 +3544,7 @@ POSSIBILITY OF SUCH DAMAGE.
           break;
 
         case 'polygon':
-          annotation['segmentation'] = [];
+        case 'polyline':
           var x0 = +Infinity;
           var y0 = +Infinity;
           var x1 = -Infinity;
@@ -3567,13 +3565,14 @@ POSSIBILITY OF SUCH DAMAGE.
               y1 = shape_attributes['all_points_y'][i];
             }
           }
-          // list to [list]
-          annotation['segmentation'] = [annotation['segmentation']];
           var w = x1 - x0;
           var h = y1 - y0;
           annotation['bbox'] = [x0, y0, w, h];
           annotation['area'] = w * h; // approximate area
       }
+
+      // list to [list]
+      annotation['segmentation'] = [annotation['segmentation']];
       return annotation;
     }
 
